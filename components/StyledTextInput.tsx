@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {StyleSheet, TextInput, View, Text} from 'react-native';
 
-function StyledTextInput({type, text, onChangeText, value}: any) {
+function StyledTextInput({type, text, onChangeText, value, autoCorrect}: any) {
     
   const [passwdState, setPasswdState] = useState(false);
 
@@ -22,6 +22,7 @@ function StyledTextInput({type, text, onChangeText, value}: any) {
         secureTextEntry={passwdState}
         onChangeText={onChangeText}
         value={value}
+        autoComplete={autoCorrect}
       />
     </View>
   );
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
     width: '85%',
     position: 'relative',
     marginBottom: 10,
+    overflow: 'hidden'
   },
   textStyle: {
     marginLeft: 10,

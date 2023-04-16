@@ -7,20 +7,47 @@ import {
   Image,
 } from 'react-native';
 import StyledTextInput from '../components/StyledTextInput';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import { signInWithGoogle } from '../firebase/FirebaseConfig';
+import auth from '@react-native-firebase/auth';
 
 function LoginPage({navigation}: any) {
   const [email, setEmail] = useState('');
   const [passwd, setPasswd] = useState('');
 
+  useEffect(() => {
+    const user = auth().currentUser?.uid
+    if(user){
+      navigation.navigate('Dashboard')
+    }
+  })
+
   const handleLogin = () => {
-    Alert.alert(email + ' ' + passwd);
-    setEmail('');
-    setPasswd('');
+    if(email && passwd) {
+      auth().signInWithEmailAndPassword(email, passwd).then((user) => {
+        navigation.navigate('Dashboard')
+      }).catch((error) => {
+        Alert.alert("" + error)
+        setPasswd('')
+      })
+    } else{
+      Alert.alert("Please Don't send empty credentials")
+    }
   };
 
   const handleRegister = () => {
-    navigation.navigate('Register')
+    navigation.navigate('Register');
+  };
+
+  const handleGoogleLogin = () => {
+    const user = signInWithGoogle()
+    user.then((user) => {
+      Alert.alert(''+user?.user.email)
+      navigation.navigate('Dashboard')
+    })
+    .catch((error)=> {
+      Alert.alert("" + error)
+    })
   }
 
   return (
@@ -44,7 +71,10 @@ function LoginPage({navigation}: any) {
         </TouchableOpacity>
       </Text>
 
-      <TouchableOpacity style={styles.btnloginWithGoogle}>
+      <TouchableOpacity
+        style={styles.btnloginWithGoogle}
+        onPress={handleGoogleLogin}
+        >
         <Image
           source={require('../assets/img/google-logo.png')}
           style={styles.googleLogo}
@@ -84,8 +114,8 @@ const styles = StyleSheet.create({
   },
   createAccContainer: {
     marginBottom: 40,
-    padding:3,
-    alignItems: 'center'
+    padding: 3,
+    alignItems: 'center',
   },
   googleLogo: {
     height: 30,
